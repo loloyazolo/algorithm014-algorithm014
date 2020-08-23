@@ -1,5 +1,7 @@
 # week2
 
+### 一些解题思路:
+
 1. 先回顾栈和队列的一些题目，滑动窗口，温度问题等利用单调栈来解决以减少时间复杂度
 
    ```java
@@ -78,8 +80,6 @@
        return dp[n - 1];
    }
    ```
-
-   
 
 4. [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 
@@ -199,3 +199,74 @@
    ```
 
    做该题的过程中有个问题（题目中已注明前k个元素的频次不相同），如果插入堆中的元素和堆中已有的元素相等的，二叉堆该怎么实现？按照二叉堆的定义，所有的父节点必须大于子节点
+
+7. [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+
+   具体的思路，将所有的字母放进一个字母桶中，记录每个字母出现的次数，如果次数一样则是字母异位词
+
+   ````java
+   private List<List<String>> groupAnagrams(String[] strs) {
+       List<List<String>> res = new ArrayList<>();
+       if(strs.length == 0){
+           return res;
+       }
+       Map<String, List<String>> map = new HashMap<>();
+   
+       for (String str : strs) {
+           int[] count = new int[26];
+           for (char c : str.toCharArray()) {
+               count[c - 'a']++;
+           }
+           StringBuilder sb = new StringBuilder();
+           for (int num : count) {
+               sb.append(num);
+           }
+           String key = sb.toString();
+           if (!map.containsKey(key)) {
+               map.put(key, new ArrayList<>());
+           }
+           map.get(key).add(str);
+       }
+       for (List<String> list : map.values()) {
+           res.add(list);
+       }
+       return res;
+   }
+   ````
+
+8. [判断路径是否相交](https://leetcode-cn.com/problems/path-crossing/)
+
+   我自己的解题思路就是记录下所有经过的坐标，来判断是否相交，看了下题解，手写哈希函数的方法很惊艳
+
+   ````java
+   public boolean isPathCrossing(String path) {
+           Set<Integer> si = new HashSet<>();
+           int x = 0, y = 0;
+           si.add(getHash(x, y));
+           for (char c : path.toCharArray()) {
+               if (c == 'N') {
+                   y++;
+               } else if (c == 'S') {
+                   y--;
+               } else if (c == 'W') {
+                   x--;
+               } else {
+                   x++;
+               }
+               int temp = getHash(x, y);
+               if (si.contains(temp)) {
+                   return true;
+               }
+               si.add(temp);
+           }
+           return false;
+       }
+   
+       int getHash(int x, int y) {
+           return x * 20001 + y;
+       }
+   ````
+
+### HashMap总结：
+
+​	具体的实现方式，将传入的值与经过哈希函数计算后的值对应，实现常数级的查询效率，关键就是哈希函数的设计，要尽量减少多个值计算出来的哈希值一样的情况，否则会降低效率，字母异位词的那一道题目中的哈希函数，就是将字母转成1-26的数字，题目已说明全部是小写字母，所以一个26长度大小的数组就足够了
