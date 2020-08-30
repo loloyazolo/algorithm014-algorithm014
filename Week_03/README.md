@@ -192,6 +192,33 @@ public static boolean repeatedSubstringPattern(String s) {
    如果没有可移动的路径，则将所在节点加入到栈中，并返回。
 
    对于每一个当前节点而言，所有“非死胡同”的分支都会走回到该节点，而“死胡同”分支不会
+   
+   ```java
+   Map<String, PriorityQueue<String>> map = new HashMap<>();
+   List<String> res = new ArrayList<>();
+   
+   public List<String> findItinerary(List<List<String>> tickets) {
+       for (List<String> ticket : tickets) {
+           String src = ticket.get(0);
+           String dst = ticket.get(1);
+           if (!map.containsKey(src)) {
+               map.put(src, new PriorityQueue<>());
+           }
+           map.get(src).offer(dst);
+       }
+       dfs("JFK");
+       Collections.reverse(res);
+       return res;
+   }
+   
+   private void dfs(String cur) {
+       while (map.containsKey(cur) && !map.get(cur).isEmpty()) {
+           String temp = map.get(cur).poll();
+           dfs(temp);
+       }
+       res.add(cur);
+   }
+   ```
 
 
 
